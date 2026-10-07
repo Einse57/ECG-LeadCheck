@@ -46,3 +46,31 @@ Reporting: counts beside every percentage, with paired bootstrap 95 % CIs (1,000
 The harm measurement under "none" is the finding. Detect-and-correct is the engineering response;
 for exact interchanges its recovery is bounded by LeadCheck's detection and typing accuracy, and that
 is stated plainly.
+
+## Amendment 1 (2026-10-07, after the first run and an independent review, before re-running)
+
+The first run is archived unchanged in `study/archive_v1/`. A methodological review found no leakage and no
+metric error, but identified the problems below. These changes are fixed before the second run.
+
+1. **Training selection.** The diagnosis models are saved at the epoch with the best fold-9 macro-AUROC
+   (fold 10 still untouched). In the first run the epoch-40 checkpoints were past their fold-9 peak, and
+   one model (ResNet, seed 0) reached 0.8998 clean macro-AUROC, just under the 0.90 sanity bar.
+2. **Seeds.** Training augmentation is seeded per data-loader worker, and the swap-augmented arm gets two
+   seeds per architecture, like the standard arm.
+3. **Operating points.**
+   - The threshold-free macro-AUROC drop is the primary endpoint.
+   - The Youden thresholds stay as pre-registered.
+   - A second operating point is added: per class, the threshold giving 95 % specificity on clean fold 9.
+     Flip, false-MI and missed-MI rates depend strongly on the threshold, so both are reported.
+4. **Null arm.** A benign perturbation (Gaussian noise of 0.01 mV plus a 30 ms shift) calibrates how much a
+   flip rate means.
+5. **Statistics.**
+   - Every proportion is reported as x/n with a Wilson 95 % interval.
+   - The headline differences (AUROC drop under LA/RA, false MI without vs with LeadCheck) get paired
+     bootstrap intervals that resample patients, not recordings.
+   - Rows with fewer than 30 records are not reported.
+6. **Reporting.**
+   - Interchange typing accuracy and wrong-type corrections.
+   - Positive predictive value of a LeadCheck flag at 0.5, 2 and 5 % interchange prevalence.
+   - Provenance (git commit, library versions, checksums of checkpoints and data).
+   - Right-leg rows labelled as approximate simulations.
