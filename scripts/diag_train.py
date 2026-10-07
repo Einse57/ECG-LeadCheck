@@ -16,14 +16,16 @@ from leadcheck.swaps import CLASSES, apply  # noqa: E402
 
 
 class Train(Dataset):
-    def __init__(self, X, Y, idx, swap_aug):
+    def __init__(self, X, Y, idx, swap_aug, seed):
         self.X, self.Y, self.idx, self.aug = X, Y, idx, swap_aug
+        self.seed = seed
+        self.rng = np.random.default_rng([seed, 0])
 
     def __len__(self):
         return len(self.idx)
 
     def __getitem__(self, i):
-        rng = np.random.default_rng()
+        rng = self.rng
         j = self.idx[i]
         kind = CLASSES[int(rng.integers(1, len(CLASSES)))] if self.aug and rng.random() < 0.5 else "none"
         x = finish(apply(self.X[j], kind, rng))
@@ -40,6 +42,8 @@ def main():
     a = ap.parse_args()
     torch.manual_seed(a.seed)
     np.random.seed(a.seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
     X, meta, folds = load(a.data)
     Y = superclass_labels(meta, a.scp)
     keep = Y.sum(1) > 0
@@ -47,12 +51,19 @@ def main():
     va = np.where((folds == 9) & keep)[0]
     dev = "cuda"
     model = build(a.arch).to(dev)
-    loader = DataLoader(Train(X, Y, tr, a.swap_aug), batch_size=128, shuffle=True, num_workers=6, persistent_workers=True, drop_last=True)
+    def seed_worker(worker_id):
+        info = torch.utils.data.get_worker_info()
+        info.dataset.rng = np.random.default_rng([a.seed, worker_id + 1])
+
+    loader = DataLoader(Train(X, Y, tr, a.swap_aug, a.seed), batch_size=128, shuffle=True, num_workers=6,
+                        persistent_workers=True, drop_last=True, worker_init_fn=seed_worker,
+                        generator=torch.Generator().manual_seed(a.seed))
     opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-2)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, 1e-3, total_steps=a.epochs * len(loader), pct_start=0.2)
     loss_fn = torch.nn.BCEWithLogitsLoss()
     Xva = torch.from_numpy(np.stack([finish(X[j]) for j in va]))
     t0 = time.time()
+    best, best_auc, history = None, -1.0, []
     for ep in range(a.epochs):
         model.train()
         for x, y in loader:
@@ -63,13 +74,18 @@ def main():
             loss.backward()
             opt.step()
             sched.step()
-        if (ep + 1) % 10 == 0:
-            model.eval()
-            with torch.no_grad():
-                p = torch.cat([torch.sigmoid(model(Xva[s:s + 512].to(dev)).float()).cpu() for s in range(0, len(Xva), 512)]).numpy()
-            auc = np.mean([roc_auc_score(Y[va, k], p[:, k]) for k in range(len(SUPER))])
-            print(f"epoch {ep + 1}: fold-9 macro AUROC {auc:.4f} ({time.time() - t0:.0f}s)", flush=True)
-    torch.save({"state": model.state_dict(), "arch": a.arch, "swap_aug": a.swap_aug, "seed": a.seed}, a.out)
+        model.eval()
+        with torch.no_grad():
+            p = torch.cat([torch.sigmoid(model(Xva[s:s + 512].to(dev)).float()).cpu() for s in range(0, len(Xva), 512)]).numpy()
+        auc = float(np.mean([roc_auc_score(Y[va, k], p[:, k]) for k in range(len(SUPER))]))
+        history.append(auc)
+        if auc > best_auc:
+            best_auc, best = auc, {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+        print(f"epoch {ep + 1}: fold-9 macro AUROC {auc:.4f} ({time.time() - t0:.0f}s)", flush=True)
+    best_epoch = int(np.argmax(history)) + 1
+    print(f"best fold-9 macro AUROC {best_auc:.4f} at epoch {best_epoch}")
+    torch.save({"state": best, "arch": a.arch, "swap_aug": a.swap_aug, "seed": a.seed, "best_epoch": best_epoch,
+                "fold9_history": history, "selection": "best fold-9 macro-AUROC"}, a.out)
     print("saved", a.out)
 
 

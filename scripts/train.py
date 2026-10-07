@@ -15,14 +15,15 @@ from leadcheck.swaps import CLASSES, apply  # noqa: E402
 
 
 class Train(Dataset):
-    def __init__(self, X, idx, epoch_size):
+    def __init__(self, X, idx, epoch_size, seed=0):
         self.X, self.idx, self.n = X, idx, epoch_size
+        self.rng = np.random.default_rng([seed, 0])
 
     def __len__(self):
         return self.n
 
     def __getitem__(self, i):
-        rng = np.random.default_rng()
+        rng = self.rng
         x = self.X[self.idx[rng.integers(len(self.idx))]]
         y = 0 if rng.random() < 0.4 else int(rng.integers(1, len(CLASSES)))
         x = finish(apply(x, CLASSES[y], rng))
@@ -51,8 +52,12 @@ def main():
     print(f"training on folds {keep}: {len(idx)} records", flush=True)
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     model = LeadNet(len(CLASSES)).to(dev)
-    loader = DataLoader(Train(X, idx, len(idx) * 2), batch_size=256, num_workers=6, persistent_workers=True,
-                        worker_init_fn=lambda w: np.random.seed(a.seed * 100 + w))
+    def seed_worker(worker_id):
+        info = torch.utils.data.get_worker_info()
+        info.dataset.rng = np.random.default_rng([a.seed, worker_id + 1])
+
+    loader = DataLoader(Train(X, idx, len(idx) * 2, a.seed), batch_size=256, num_workers=6, persistent_workers=True,
+                        worker_init_fn=seed_worker, generator=torch.Generator().manual_seed(a.seed))
     opt = torch.optim.AdamW(model.parameters(), lr=2e-3, weight_decay=1e-2)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, 2e-3, total_steps=a.epochs * len(loader), pct_start=0.15)
     loss_fn = torch.nn.CrossEntropyLoss(label_smoothing=0.02)

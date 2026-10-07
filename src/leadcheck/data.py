@@ -14,7 +14,11 @@ def load(data_dir) -> tuple[np.ndarray, list[dict], np.ndarray]:
     X = np.load(d / "X100.npy").astype(np.float32)
     meta = json.load(open(d / "meta.json"))["records"]
     X = np.stack([canonical(x) for x in X])
-    return X, meta, np.array([m["fold"] for m in meta])
+    folds = np.array([m["fold"] for m in meta])
+    fold_of = {}
+    for m in meta:
+        assert fold_of.setdefault(m["patient_id"], m["fold"]) == m["fold"], f"patient {m['patient_id']} spans folds"
+    return X, meta, folds
 
 
 def finish(x: np.ndarray) -> np.ndarray:
