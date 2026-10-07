@@ -1,6 +1,9 @@
-numpy
-torch
-scikit-learn
-joblib
-scipy
-onnx
+# Versions used for every published number (Python 3.12.3)
+torch==2.10.0
+numpy==2.2.6
+scikit-learn==1.9.0
+scipy==1.18.0
+joblib==1.5.3
+matplotlib==3.11.2
+onnx==1.23.2
+onnxruntime==1.30.0

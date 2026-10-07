@@ -1,4 +1,5 @@
 numpy
+scipy
 onnxruntime
 streamlit
 matplotlib

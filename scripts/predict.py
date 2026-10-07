@@ -29,6 +29,7 @@ def main():
     if a.cnn:
         dev = "cuda" if torch.cuda.is_available() else "cpu"
         ck = torch.load(a.cnn, map_location=dev)
+        assert ck["classes"] == CLASSES, "checkpoint class order differs from swaps.CLASSES"
         model = LeadNet(len(CLASSES)).to(dev).eval()
         model.load_state_dict(ck["state"])
         flat = torch.from_numpy(V.reshape(-1, 12, V.shape[-1]))

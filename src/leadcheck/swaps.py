@@ -24,6 +24,8 @@ LIMB = {
 PRECORDIAL = {f"V{i}/V{i + 1}": (5 + i, 6 + i) for i in range(1, 6)}
 CLASSES = ["none"] + list(LIMB) + list(PRECORDIAL)
 APPROXIMATE = {"RA/RL", "LA/RL"}
+# undoing an interchange: pairwise swaps are their own inverse, the two rotations invert each other
+INVERSE = {"rotation RA>LA>LL": "rotation RA>LL>LA", "rotation RA>LL>LA": "rotation RA>LA>LL"}
 
 
 def limb_leads(ra: np.ndarray, la: np.ndarray, ll: np.ndarray) -> np.ndarray:

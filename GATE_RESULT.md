@@ -6,7 +6,7 @@ threshold was fixed on fold 9 at 99 % specificity. Raw output: `results/fold10_m
 
 ## Sensitivity at the fold-9 threshold
 
-| group | CNN | correlation-feature baseline | target | CNN |
+| group | CNN | correlation-feature baseline | target | CNN verdict |
 |---|---|---|---|---|
 | exact limb (LA/RA, RA/LL, rotations) | **99.6 %** | 96.0 % | 95 % | pass |
 | LA/LL | **94.0 %** | 24.2 % | 80 % | pass |
