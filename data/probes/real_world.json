@@ -1,0 +1,7 @@
+[
+  {"ecg_id": 11641, "fold": 1, "source": "report", "text": "armelektroden möglicherweise vertauscht", "meaning": "arm electrodes possibly interchanged"},
+  {"ecg_id": 21572, "fold": 6, "source": "report", "text": "* armelektroden möglicherweise vertauscht", "meaning": "arm electrodes possibly interchanged"},
+  {"ecg_id": 10646, "fold": 5, "source": "electrodes_problems", "text": "Elektroden vertauscht???", "meaning": "electrodes interchanged?"},
+  {"ecg_id": 1853, "fold": 10, "source": "report", "text": "... and v1/v2 lead interchange.", "meaning": "possible V1/V2 interchange named as a differential"},
+  {"ecg_id": 2646, "fold": 7, "source": "report", "text": "auffallend hohes r in v2, dd:elektrodenlage oder st.n. post. infarkt", "meaning": "tall R in V2; differential: electrode position or old posterior infarct"}
+]

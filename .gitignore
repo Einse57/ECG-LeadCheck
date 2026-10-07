@@ -1,0 +1,5 @@
+jobs_local/
+__pycache__/
+*.egg-info/
+.venv
+.pytest_cache/
