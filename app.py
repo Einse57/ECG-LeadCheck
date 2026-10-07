@@ -34,7 +34,9 @@ st.set_page_config(page_title="ECG LeadCheck", page_icon=":material/monitor_hear
 
 @st.cache_resource
 def session():
-    return ort.InferenceSession(str(ROOT / "model/leadcheck.onnx"), providers=["CPUExecutionProvider"])
+    opts = ort.SessionOptions()
+    opts.intra_op_num_threads = 2
+    return ort.InferenceSession(str(ROOT / "model/leadcheck.onnx"), opts, providers=["CPUExecutionProvider"])
 
 
 @st.cache_data
