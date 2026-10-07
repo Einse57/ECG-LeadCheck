@@ -1,0 +1,184 @@
+{
+ "cnn": {
+  "threshold": 0.970076322555542,
+  "specificity": 0.9895359417652412,
+  "n_test": 2198,
+  "classes": {
+   "LA/RA": {
+    "sensitivity": 0.9913557779799818,
+    "auroc": 0.9981453898448504,
+    "type_correct_when_flagged": 0.9954107388710418
+   },
+   "LA/LL": {
+    "sensitivity": 0.9399454049135578,
+    "auroc": 0.994602587677937,
+    "type_correct_when_flagged": 0.9941916747337851
+   },
+   "RA/LL": {
+    "sensitivity": 0.9963603275705186,
+    "auroc": 0.9994258160077695,
+    "type_correct_when_flagged": 0.9899543378995433
+   },
+   "rotation RA>LA>LL": {
+    "sensitivity": 1.0,
+    "auroc": 0.9993439523563898,
+    "type_correct_when_flagged": 0.991810737033667
+   },
+   "rotation RA>LL>LA": {
+    "sensitivity": 0.9977252047315741,
+    "auroc": 0.9993686873913832,
+    "type_correct_when_flagged": 0.9872321021431828
+   },
+   "RA/RL": {
+    "sensitivity": 0.9995450409463148,
+    "auroc": 0.9995259980741861,
+    "type_correct_when_flagged": 0.9995448338643604
+   },
+   "LA/RL": {
+    "sensitivity": 0.9995450409463148,
+    "auroc": 0.9997365046063053,
+    "type_correct_when_flagged": 0.9986345015930814
+   },
+   "V1/V2": {
+    "sensitivity": 0.9704276615104641,
+    "auroc": 0.9964800699784153,
+    "type_correct_when_flagged": 0.9990623534927332
+   },
+   "V2/V3": {
+    "sensitivity": 0.9494995450409464,
+    "auroc": 0.9962066391731749,
+    "type_correct_when_flagged": 0.9980833732630571
+   },
+   "V3/V4": {
+    "sensitivity": 0.9599636032757052,
+    "auroc": 0.9973330664571399,
+    "type_correct_when_flagged": 0.9976303317535545
+   },
+   "V4/V5": {
+    "sensitivity": 0.8839854413102821,
+    "auroc": 0.9917455358953999,
+    "type_correct_when_flagged": 0.9958826556870818
+   },
+   "V5/V6": {
+    "sensitivity": 0.8853503184713376,
+    "auroc": 0.9909961367808107,
+    "type_correct_when_flagged": 0.9948612538540597
+   }
+  },
+  "groups": {
+   "exact limb (LA/RA, RA/LL, rotations)": {
+    "sensitivity": 0.9963603275705186,
+    "target": 0.95,
+    "pass": true
+   },
+   "LA/LL": {
+    "sensitivity": 0.9399454049135578,
+    "target": 0.8,
+    "pass": true
+   },
+   "right leg (approximate)": {
+    "sensitivity": 0.9995450409463148,
+    "target": 0.97,
+    "pass": true
+   },
+   "adjacent precordial": {
+    "sensitivity": 0.9298453139217471,
+    "target": 0.9,
+    "pass": true
+   }
+  },
+  "type_correct_when_flagged": 0.9951649042808286,
+  "pooled_sensitivity": 0.9644752805580831
+ },
+ "baseline": {
+  "threshold": 0.9090706685757165,
+  "specificity": 0.9868061874431301,
+  "n_test": 2198,
+  "classes": {
+   "LA/RA": {
+    "sensitivity": 0.964968152866242,
+    "auroc": 0.99623592793846,
+    "type_correct_when_flagged": 0.8420556341348421
+   },
+   "LA/LL": {
+    "sensitivity": 0.24158325750682438,
+    "auroc": 0.8969240379830783,
+    "type_correct_when_flagged": 0.9190207156308852
+   },
+   "RA/LL": {
+    "sensitivity": 0.9381255686988171,
+    "auroc": 0.9930441769794859,
+    "type_correct_when_flagged": 0.8322017458777885
+   },
+   "rotation RA>LA>LL": {
+    "sensitivity": 0.9658780709736123,
+    "auroc": 0.9965474444879578,
+    "type_correct_when_flagged": 0.8299576071596797
+   },
+   "rotation RA>LL>LA": {
+    "sensitivity": 0.9690627843494085,
+    "auroc": 0.9968308107047436,
+    "type_correct_when_flagged": 0.8253521126760563
+   },
+   "RA/RL": {
+    "sensitivity": 1.0,
+    "auroc": 0.9999906855516763,
+    "type_correct_when_flagged": 1.0
+   },
+   "LA/RL": {
+    "sensitivity": 0.9995450409463148,
+    "auroc": 0.9999511508932348,
+    "type_correct_when_flagged": 1.0
+   },
+   "V1/V2": {
+    "sensitivity": 0.8953594176524113,
+    "auroc": 0.9887835413284143,
+    "type_correct_when_flagged": 0.9949186991869918
+   },
+   "V2/V3": {
+    "sensitivity": 0.7652411282984531,
+    "auroc": 0.9714905435580862,
+    "type_correct_when_flagged": 0.9845422116527943
+   },
+   "V3/V4": {
+    "sensitivity": 0.8430391264786169,
+    "auroc": 0.9793363103690095,
+    "type_correct_when_flagged": 0.9951430113329736
+   },
+   "V4/V5": {
+    "sensitivity": 0.7643312101910829,
+    "auroc": 0.9724251967004498,
+    "type_correct_when_flagged": 0.9898809523809524
+   },
+   "V5/V6": {
+    "sensitivity": 0.632393084622384,
+    "auroc": 0.9598440678555491,
+    "type_correct_when_flagged": 0.9798561151079137
+   }
+  },
+  "groups": {
+   "exact limb (LA/RA, RA/LL, rotations)": {
+    "sensitivity": 0.95950864422202,
+    "target": 0.95,
+    "pass": true
+   },
+   "LA/LL": {
+    "sensitivity": 0.24158325750682438,
+    "target": 0.8,
+    "pass": false
+   },
+   "right leg (approximate)": {
+    "sensitivity": 0.9997725204731575,
+    "target": 0.97,
+    "pass": true
+   },
+   "adjacent precordial": {
+    "sensitivity": 0.7800727934485896,
+    "target": 0.9,
+    "pass": false
+   }
+  },
+  "type_correct_when_flagged": 0.929473444267153,
+  "pooled_sensitivity": 0.8316272368820139
+ }
+}
