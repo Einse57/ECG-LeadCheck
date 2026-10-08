@@ -54,7 +54,9 @@ correctly recorded ECGs** (98.9 % specificity on the test fold).
 
 Per-class numbers, with AUROC from 0.991 to 1.000, are in [`GATE_RESULT.md`](GATE_RESULT.md).
 
-**For context.** A published inter-lead correlation method (Jekova et al., *Comput Methods Programs Biomed*
+**For context.** A concurrent deep-learning detector by Pandey et al. (CinC 2026) reports AUROC 0.99 for
+detecting and typing limb swaps on synthetically swapped PTB-XL; LeadCheck uses the same idea and also covers
+chest and right-leg interchanges. A published inter-lead correlation method (Jekova et al., *Comput Methods Programs Biomed*
 2016) reports 95.5-96.9 % for limb reversals and 93.8-97.8 % for adjacent chest swaps, at more than 99 %
 specificity on a different test set. My baseline uses correlations in the same spirit but is not a
 reimplementation of their rules. So the fair claim is that this model is **in the same range as the
@@ -64,9 +66,20 @@ type of mistake.
 ## Study: do swapped electrodes fool ECG diagnosis AI?
 
 LeadCheck is also the guard in a small study ([`study/`](study/)). It asks how electrode interchanges affect
-deep-learning ECG *diagnosis* models, and whether detecting and undoing the interchange fixes them. I found no
-earlier study that measures this ([`study/PRIOR_ART.md`](study/PRIOR_ART.md)). A 2021 commentary by Bond et al.
-called for exactly this kind of stress test of ECG-AI models.
+deep-learning ECG *diagnosis* models, and whether detecting and undoing the interchange fixes them.
+
+**What is already known.** Lead reversals are known to degrade automated ECG analysis (e.g. Cao et al.,
+ICASSP 2020), and deep-learning detection and correction of limb swaps has been described concurrently
+(Pandey et al., CinC 2026).
+
+**What is new here.** In the searches listed in [`study/PRIOR_ART.md`](study/PRIOR_ART.md), I found no study
+that does either of the following:
+- measures, per interchange type, how often deep-learning diagnosis models on PTB-XL newly call or lose
+  myocardial infarction at a fixed operating point;
+- compares a detect-and-correct guard with swap-augmented training.
+
+A 2021 commentary by Bond et al. called for guidelines on stress-testing ECG machine-learning algorithms;
+this study is one such stress test.
 
 **Setup**
 - Eight models on the standard PTB-XL five-class task (normal, MI, ST/T change, conduction disturbance, hypertrophy):
@@ -81,23 +94,29 @@ called for exactly this kind of stress test of ECG-AI models.
 [`study/RESULTS.md`](study/RESULTS.md)):
 
 - **Accuracy drop.** An LA/RA (arm) interchange lowers the standard models' macro-AUROC by 0.136-0.147
-  (patient-bootstrap 95 % CIs within 0.125-0.157). RA/LL and one limb rotation push MI detection to chance
-  level: MI AUROC 0.47-0.58.
+  (patient-bootstrap 95 % CIs within 0.125-0.157). RA/LL and one limb rotation push MI detection to about
+  chance: MI AUROC 0.47-0.58.
 - **False and missed MI.** At a fixed operating point (95 % specificity on clean data):
   - LA/RA makes the standard models call MI on 26-58 % of normal ECGs, and RA/LL on 92-100 %.
   - LA/LL hides 35-53 % of the MIs they had detected.
   - A benign perturbation (noise plus a 30 ms shift) causes 0-0.3 % false MI.
 - **LeadCheck in front (detect and correct).**
-  - Newly called MI stays at 0.1 % or below, and lost MIs at 4.5 % or below.
+  - Newly called MI stays at 0.1 % or below.
+  - Lost MIs stay at 1.1 % or below, except LA/LL (up to 5.4 %).
   - 0.2-2.8 % of diagnoses change.
   - It changes 0-0.2 % of diagnoses on correctly recorded ECGs.
   - Right-leg interchanges cannot be undone, so they are routed to re-recording.
-- **Training with interchanges instead.** This keeps false MI at 2.2 % or below. But the augmented models
-  still lose 10-32 % of their detected MIs under limb interchanges, so augmentation alone is not a full fix.
+- **Training with interchanges instead.**
+  - The macro-AUROC drop under LA/RA shrinks to 0.008-0.010, and false MI stays at 2.2 % or below.
+  - At thresholds set on clean data, the augmented models still lose 10-32 % of their detected MIs under
+    limb interchanges. With LeadCheck in front, that is at most 2.6 %.
+  - Re-tuning thresholds on mixed data might narrow this gap; that was not tested.
 
 **Caveats**
-- The interchanges are simulated on real recordings, and the detector shares that simulator. For exact
-  interchanges, recovery is therefore bounded by LeadCheck's detection and typing accuracy, by construction.
+- The interchanges are simulated on real recordings, and the detector shares that simulator.
+  - For exact interchanges, undoing a correctly typed swap returns the original signal, so the recovery is
+    LeadCheck's detection and typing accuracy, by construction.
+  - The numbers independent of the simulator are the cost on correct ECGs (0-0.2 %) and the 1.1 % flag rate.
 - At a 2 % interchange prevalence, about 65 % of LeadCheck's flags would be true interchanges.
 - One dataset. Real interchanged recordings from other hospitals have not been tested.
 

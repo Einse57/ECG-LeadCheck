@@ -56,60 +56,60 @@ Macro-AUROC drop under LA/RA, per model, with patient-bootstrap 95 % interval:
 
 Each class threshold gives 95 % specificity on unmodified fold-9 recordings, the same rule for every model. Rates are relative to the same model's prediction on the unmodified recording; ranges across the four standard models. 'n/a' marks rows with fewer than 30 records (right-leg interchanges are routed to re-recording).
 
-| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | changed, with LeadCheck | newly MI, with LeadCheck | re-record |
-|---|---|---|---|---|---|---|
-| benign null perturbation | 2.7-9.3 % | 0.0-0.3 % | 0.6-3.4 % | | | |
-| LA/RA | 75.1-84.5 % | 25.9-57.8 % | 1.4-7.9 % | 0.3-0.6 % | 0.0-0.1 % | 0/2158 |
-| LA/LL | 36.5-44.3 % | 0.9-2.8 % | 35.2-52.9 % | 2.3-2.8 % | 0.0 % | 1/2158 |
-| RA/LL | 84.8-89.9 % | 92.1-99.7 % | 2.0-6.6 % | 0.4-0.6 % | 0.0 % | 0/2158 |
-| rotation RA>LA>LL | 83.7-90.5 % | 93.3-100.0 % | 1.2-5.1 % | 0.2-0.4 % | 0.0 % | 1/2158 |
-| rotation RA>LL>LA | 78.2-84.4 % | 26.2-64.7 % | 28.7-36.1 % | 0.5-0.6 % | 0.0 % | 0/2158 |
-| RA/RL (approx. simulation) | 67.9-74.4 % | 26.2-46.3 % | 0.3-3.0 % | n/a | n/a | 2156/2158 |
-| LA/RL (approx. simulation) | 25.6-30.1 % | 0.0-0.2 % | 27.5-44.9 % | n/a | n/a | 2154/2158 |
-| V1/V2 | 20.4-30.5 % | 1.3-1.9 % | 3.4-6.6 % | 0.4-0.6 % | 0.0-0.1 % | 0/2158 |
-| V2/V3 | 13.0-22.2 % | 0.0-1.1 % | 8.5-14.3 % | 0.5-1.1 % | 0.0 % | 0/2158 |
-| V3/V4 | 12.1-17.7 % | 0.0-0.9 % | 4.0-19.4 % | 0.2-0.6 % | 0.0 % | 0/2158 |
-| V4/V5 | 13.4-15.6 % | 0.1-0.2 % | 4.7-13.9 % | 1.4-2.1 % | 0.0-0.1 % | 0/2158 |
-| V5/V6 | 7.9-10.2 % | 0.1-0.2 % | 2.1-5.4 % | 1.0-1.4 % | 0.0-0.1 % | 0/2158 |
-| unmodified recording (cost of the guard) | | | | 0.0-0.2 % | 0.0 % | |
+| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | changed, with LeadCheck | newly MI, with LeadCheck | MI lost, with LeadCheck | re-record |
+|---|---|---|---|---|---|---|---|
+| benign null perturbation | 2.7-9.3 % | 0.0-0.3 % | 0.6-3.4 % | | | | |
+| LA/RA | 75.1-84.5 % | 25.9-57.8 % | 1.4-7.9 % | 0.3-0.6 % | 0.0-0.1 % | 0.0-0.5 % | 0/2158 |
+| LA/LL | 36.5-44.3 % | 0.9-2.8 % | 35.2-52.9 % | 2.3-2.8 % | 0.0 % | 3.7-5.4 % | 1/2158 |
+| RA/LL | 84.8-89.9 % | 92.1-99.7 % | 2.0-6.6 % | 0.4-0.6 % | 0.0 % | 0.0-0.3 % | 0/2158 |
+| rotation RA>LA>LL | 83.7-90.5 % | 93.3-100.0 % | 1.2-5.1 % | 0.2-0.4 % | 0.0 % | 0.3-0.9 % | 1/2158 |
+| rotation RA>LL>LA | 78.2-84.4 % | 26.2-64.7 % | 28.7-36.1 % | 0.5-0.6 % | 0.0 % | 0.3-0.9 % | 0/2158 |
+| RA/RL (approx. simulation) | 67.9-74.4 % | 26.2-46.3 % | 0.3-3.0 % | n/a | n/a | n/a | 2156/2158 |
+| LA/RL (approx. simulation) | 25.6-30.1 % | 0.0-0.2 % | 27.5-44.9 % | n/a | n/a | n/a | 2154/2158 |
+| V1/V2 | 20.4-30.5 % | 1.3-1.9 % | 3.4-6.6 % | 0.4-0.6 % | 0.0-0.1 % | 0.0-0.6 % | 0/2158 |
+| V2/V3 | 13.0-22.2 % | 0.0-1.1 % | 8.5-14.3 % | 0.5-1.1 % | 0.0 % | 0.3-0.8 % | 0/2158 |
+| V3/V4 | 12.1-17.7 % | 0.0-0.9 % | 4.0-19.4 % | 0.2-0.6 % | 0.0 % | 0.0-0.3 % | 0/2158 |
+| V4/V5 | 13.4-15.6 % | 0.1-0.2 % | 4.7-13.9 % | 1.4-2.1 % | 0.0-0.1 % | 0.3-1.1 % | 0/2158 |
+| V5/V6 | 7.9-10.2 % | 0.1-0.2 % | 2.1-5.4 % | 1.0-1.4 % | 0.0-0.1 % | 0.6-0.9 % | 0/2158 |
+| unmodified recording (cost of the guard) | | | | 0.0-0.2 % | 0.0 % | 0.0-0.5 % | |
 
 ## 3. Pre-registered Youden operating point (standard models)
 
 Thresholds maximise Youden's J on unmodified fold 9. These thresholds differ widely between models, so these rates depend on calibration as much as on the interchange; section 2 is the like-for-like comparison.
 
-| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | changed, with LeadCheck | newly MI, with LeadCheck | re-record |
-|---|---|---|---|---|---|---|
-| benign null perturbation | 3.7-10.8 % | 0.3-1.1 % | 0.2-2.4 % | | | |
-| LA/RA | 83.1-89.4 % | 65.9-94.1 % | 0.2-1.3 % | 0.5-0.8 % | 0.1-0.1 % | 0/2158 |
-| LA/LL | 42.4-45.8 % | 3.9-12.5 % | 22.9-37.2 % | 2.4-3.0 % | 0.0-0.2 % | 1/2158 |
-| RA/LL | 87.5-89.8 % | 99.1-100.0 % | 0.2-2.0 % | 0.5-0.8 % | 0.0 % | 0/2158 |
-| rotation RA>LA>LL | 87.8-91.6 % | 98.7-100.0 % | 0.0-1.1 % | 0.2-0.5 % | 0.0 % | 1/2158 |
-| rotation RA>LL>LA | 86.5-90.2 % | 78.6-92.0 % | 9.6-16.8 % | 0.5-0.8 % | 0.0 % | 0/2158 |
-| RA/RL (approx. simulation) | 74.6-80.2 % | 56.4-84.4 % | 0.0-0.4 % | n/a | n/a | 2156/2158 |
-| LA/RL (approx. simulation) | 28.9-32.2 % | 0.1-1.2 % | 20.4-32.1 % | n/a | n/a | 2154/2158 |
-| V1/V2 | 24.0-30.4 % | 4.8-10.0 % | 0.8-3.6 % | 0.3-0.7 % | 0.0-0.1 % | 0/2158 |
-| V2/V3 | 15.1-23.3 % | 0.5-4.2 % | 4.8-9.0 % | 0.7-1.3 % | 0.0-0.2 % | 0/2158 |
-| V3/V4 | 13.6-19.2 % | 0.8-2.2 % | 1.8-11.2 % | 0.3-0.7 % | 0.0-0.1 % | 0/2158 |
-| V4/V5 | 16.8-19.1 % | 0.7-1.9 % | 1.3-5.5 % | 1.9-2.6 % | 0.0-0.2 % | 0/2158 |
-| V5/V6 | 9.7-12.9 % | 0.1-1.9 % | 1.3-2.9 % | 1.1-1.9 % | 0.0-0.1 % | 0/2158 |
-| unmodified recording (cost of the guard) | | | | 0.1-0.3 % | 0.0 % | |
+| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | changed, with LeadCheck | newly MI, with LeadCheck | MI lost, with LeadCheck | re-record |
+|---|---|---|---|---|---|---|---|
+| benign null perturbation | 3.7-10.8 % | 0.3-1.1 % | 0.2-2.4 % | | | | |
+| LA/RA | 83.1-89.4 % | 65.9-94.1 % | 0.2-1.3 % | 0.5-0.8 % | 0.1-0.1 % | 0.0-0.2 % | 0/2158 |
+| LA/LL | 42.4-45.8 % | 3.9-12.5 % | 22.9-37.2 % | 2.4-3.0 % | 0.0-0.2 % | 1.5-2.4 % | 1/2158 |
+| RA/LL | 87.5-89.8 % | 99.1-100.0 % | 0.2-2.0 % | 0.5-0.8 % | 0.0 % | 0.0 % | 0/2158 |
+| rotation RA>LA>LL | 87.8-91.6 % | 98.7-100.0 % | 0.0-1.1 % | 0.2-0.5 % | 0.0 % | 0.0-0.2 % | 1/2158 |
+| rotation RA>LL>LA | 86.5-90.2 % | 78.6-92.0 % | 9.6-16.8 % | 0.5-0.8 % | 0.0 % | 0.0 % | 0/2158 |
+| RA/RL (approx. simulation) | 74.6-80.2 % | 56.4-84.4 % | 0.0-0.4 % | n/a | n/a | n/a | 2156/2158 |
+| LA/RL (approx. simulation) | 28.9-32.2 % | 0.1-1.2 % | 20.4-32.1 % | n/a | n/a | n/a | 2154/2158 |
+| V1/V2 | 24.0-30.4 % | 4.8-10.0 % | 0.8-3.6 % | 0.3-0.7 % | 0.0-0.1 % | 0.0-0.2 % | 0/2158 |
+| V2/V3 | 15.1-23.3 % | 0.5-4.2 % | 4.8-9.0 % | 0.7-1.3 % | 0.0-0.2 % | 0.2-0.4 % | 0/2158 |
+| V3/V4 | 13.6-19.2 % | 0.8-2.2 % | 1.8-11.2 % | 0.3-0.7 % | 0.0-0.1 % | 0.0-0.4 % | 0/2158 |
+| V4/V5 | 16.8-19.1 % | 0.7-1.9 % | 1.3-5.5 % | 1.9-2.6 % | 0.0-0.2 % | 0.2-0.7 % | 0/2158 |
+| V5/V6 | 9.7-12.9 % | 0.1-1.9 % | 1.3-2.9 % | 1.1-1.9 % | 0.0-0.1 % | 0.2-0.4 % | 0/2158 |
+| unmodified recording (cost of the guard) | | | | 0.1-0.3 % | 0.0 % | 0.0 % | |
 
-Swap-augmented models at 95 % clean specificity (no LeadCheck):
+Swap-augmented models at 95 % clean specificity, without and with LeadCheck:
 
-| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost |
-|---|---|---|---|
-| LA/RA | 19.0-22.2 % | 0.1-1.1 % | 9.7-20.4 % |
-| LA/LL | 27.2-29.8 % | 0.6-1.2 % | 20.4-26.5 % |
-| RA/LL | 25.8-31.2 % | 0.2-1.0 % | 14.7-28.9 % |
-| rotation RA>LA>LL | 29.3-32.2 % | 0.3-1.0 % | 17.2-32.2 % |
-| rotation RA>LL>LA | 27.8-32.3 % | 0.2-2.1 % | 20.6-30.1 % |
-| RA/RL (approx. simulation) | 26.8-28.1 % | 1.1-2.2 % | 6.2-12.3 % |
-| LA/RL (approx. simulation) | 20.9-24.1 % | 0.2-0.6 % | 20.6-27.7 % |
-| V1/V2 | 15.5-17.9 % | 0.7-1.0 % | 2.7-5.4 % |
-| V2/V3 | 12.1-14.3 % | 0.1-0.4 % | 5.1-6.4 % |
-| V3/V4 | 9.5-11.3 % | 0.1-0.5 % | 3.3-4.3 % |
-| V4/V5 | 9.6-11.7 % | 0.1-0.6 % | 2.5-5.7 % |
-| V5/V6 | 8.5-10.5 % | 0.0-0.7 % | 3.5-6.3 % |
+| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | MI lost, with LeadCheck |
+|---|---|---|---|---|
+| LA/RA | 19.0-22.2 % | 0.1-1.1 % | 9.7-20.4 % | 0.0-0.3 % |
+| LA/LL | 27.2-29.8 % | 0.6-1.2 % | 20.4-26.5 % | 1.6-2.6 % |
+| RA/LL | 25.8-31.2 % | 0.2-1.0 % | 14.7-28.9 % | 0.0-0.6 % |
+| rotation RA>LA>LL | 29.3-32.2 % | 0.3-1.0 % | 17.2-32.2 % | 0.0-0.3 % |
+| rotation RA>LL>LA | 27.8-32.3 % | 0.2-2.1 % | 20.6-30.1 % | 0.0-0.6 % |
+| RA/RL (approx. simulation) | 26.8-28.1 % | 1.1-2.2 % | 6.2-12.3 % | n/a |
+| LA/RL (approx. simulation) | 20.9-24.1 % | 0.2-0.6 % | 20.6-27.7 % | n/a |
+| V1/V2 | 15.5-17.9 % | 0.7-1.0 % | 2.7-5.4 % | 0.0-0.3 % |
+| V2/V3 | 12.1-14.3 % | 0.1-0.4 % | 5.1-6.4 % | 0.0-0.6 % |
+| V3/V4 | 9.5-11.3 % | 0.1-0.5 % | 3.3-4.3 % | 0.0-0.6 % |
+| V4/V5 | 9.6-11.7 % | 0.1-0.6 % | 2.5-5.7 % | 0.0-0.9 % |
+| V5/V6 | 8.5-10.5 % | 0.0-0.7 % | 3.5-6.3 % | 0.0-1.5 % |
 
 ## 4. The guard itself
 

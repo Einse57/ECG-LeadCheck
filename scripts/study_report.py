@@ -84,19 +84,19 @@ if "arm_comparison" in r:
 
 def op_table(op, title, note):
     out = ["", f"## {title}", "", note, "",
-           "| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | changed, with LeadCheck | newly MI, with LeadCheck | re-record |",
-           "|---|---|---|---|---|---|---|"]
+           "| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | changed, with LeadCheck | newly MI, with LeadCheck | MI lost, with LeadCheck | re-record |",
+           "|---|---|---|---|---|---|---|---|"]
     out.append(f"| benign null perturbation | {span([M[n]['null'][op]['flip']['rate'] for n in STD])} | {span([M[n]['null'][op]['false_mi']['rate'] for n in STD])} | "
-               f"{span([M[n]['null'][op]['missed_mi']['rate'] for n in STD])} | | | |")
+               f"{span([M[n]['null'][op]['missed_mi']['rate'] for n in STD])} | | | | |")
     for k in ORDER:
         none = [M[n]["none"][k][op] for n in STD]
         dc = [M[n]["detect_correct"][k][op] for n in STD]
         rr = lc["per_class"][k]["rerecord"]
         out.append(f"| {label(k)} | {span([e['flip']['rate'] for e in none])} | {span([e['false_mi']['rate'] for e in none])} | "
                    f"{span([e['missed_mi']['rate'] for e in none])} | {span([e['flip']['rate'] for e in dc])} | {span([e['false_mi']['rate'] for e in dc])} | "
-                   f"{rr['x']}/{rr['n']} |")
+                   f"{span([e['missed_mi']['rate'] for e in dc])} | {rr['x']}/{rr['n']} |")
     out.append(f"| unmodified recording (cost of the guard) | | | | {span([M[n]['detect_correct_clean_cost'][op]['flip']['rate'] for n in STD])} | "
-               f"{span([M[n]['detect_correct_clean_cost'][op]['false_mi']['rate'] for n in STD])} | |")
+               f"{span([M[n]['detect_correct_clean_cost'][op]['false_mi']['rate'] for n in STD])} | {span([M[n]['detect_correct_clean_cost'][op]['missed_mi']['rate'] for n in STD])} | |")
     return out
 
 
@@ -107,11 +107,13 @@ L += op_table("spec95", "2. Operating point at 95 % clean specificity (standard 
 L += op_table("youden", "3. Pre-registered Youden operating point (standard models)",
               "Thresholds maximise Youden's J on unmodified fold 9. These thresholds differ widely between models, so these rates "
               "depend on calibration as much as on the interchange; section 2 is the like-for-like comparison.")
-L += ["", "Swap-augmented models at 95 % clean specificity (no LeadCheck):", "",
-      "| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost |", "|---|---|---|---|"]
+L += ["", "Swap-augmented models at 95 % clean specificity, without and with LeadCheck:", "",
+      "| interchange | diagnosis changed | normal ECGs newly called MI | detected MI lost | MI lost, with LeadCheck |", "|---|---|---|---|---|"]
 for k in ORDER:
     e = [M[n]["none"][k]["spec95"] for n in AUG]
-    L.append(f"| {label(k)} | {span([x['flip']['rate'] for x in e])} | {span([x['false_mi']['rate'] for x in e])} | {span([x['missed_mi']['rate'] for x in e])} |")
+    g = [M[n]["detect_correct"][k]["spec95"] for n in AUG]
+    L.append(f"| {label(k)} | {span([x['flip']['rate'] for x in e])} | {span([x['false_mi']['rate'] for x in e])} | {span([x['missed_mi']['rate'] for x in e])} | "
+             f"{span([x['missed_mi']['rate'] for x in g])} |")
 
 sens = lc["pooled_exact_sensitivity"]["rate"]
 fpr = lc["clean_flagged"]["rate"]
