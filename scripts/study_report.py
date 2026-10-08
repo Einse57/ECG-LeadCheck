@@ -164,30 +164,32 @@ for name in STD + AUG:
         D += [f"| unmodified | detect_correct | {cell(e['flip'])} | {cell(e['false_mi'])} | {cell(e['missed_mi'])} |", ""]
 (ROOT / "study/RESULTS_per_model.md").write_text("\n".join(D))
 
-fig, ax = plt.subplots(figsize=(10.5, 4.4))
+fig, axes = plt.subplots(2, 1, figsize=(10.5, 7.2), sharex=True)
 x = np.arange(len(ORDER))
 w = 0.27
-series = [("standard model", [np.mean([M[n]["none"][k]["spec95"]["false_mi"]["rate"] for n in STD]) for k in ORDER], "#c0392b"),
-          ("swap-augmented model", [np.mean([M[n]["none"][k]["spec95"]["false_mi"]["rate"] for n in AUG]) for k in ORDER], "#e8a33d"),
-          ("standard model + LeadCheck", [np.mean([M[n]["detect_correct"][k]["spec95"]["false_mi"]["rate"] or 0 for n in STD]) for k in ORDER], "#2e86de")]
-for i, (lab, vals, col) in enumerate(series):
-    bars = ax.bar(x + (i - 1) * w, 100 * np.array(vals), w, label=lab, color=col)
-    if i == 2:
-        for j, k in enumerate(ORDER):
-            if k in APPROX:
-                bars[j].set_height(0)
-                ax.text(x[j] + w, 1, "re-record", rotation=90, ha="center", va="bottom", fontsize=7, color="#555")
-null = np.mean([M[n]["null"]["spec95"]["false_mi"]["rate"] for n in STD])
-ax.axhline(100 * null, color="#555", lw=0.8, ls="--")
-ax.text(len(ORDER) - 0.5, 100 * null + 1, "benign perturbation", ha="right", fontsize=7, color="#555")
-ax.set_xticks(x)
-ax.set_xticklabels([("rot " + k[9:] if k.startswith("rotation") else k) + ("*" if k in APPROX else "") for k in ORDER],
-                   rotation=35, ha="right", fontsize=9)
-ax.set_ylabel("normal ECGs newly called MI (%)")
-ax.set_title("Electrode interchanges vs ECG-AI: PTB-XL test fold, 95 % clean specificity, mean over models")
-ax.legend(frameon=False, fontsize=9, loc="upper right")
-ax.spines[["top", "right"]].set_visible(False)
-fig.text(0.01, 0.01, "* approximate simulation (right-leg potential not recorded)", fontsize=7, color="#555")
+for ax, metric, ylab in ((axes[0], "false_mi", "normal ECGs newly called MI (%)"), (axes[1], "missed_mi", "detected MIs lost (%)")):
+    series = [("standard model", [np.mean([M[n]["none"][k]["spec95"][metric]["rate"] for n in STD]) for k in ORDER], "#c0392b"),
+              ("swap-augmented model", [np.mean([M[n]["none"][k]["spec95"][metric]["rate"] for n in AUG]) for k in ORDER], "#e8a33d"),
+              ("standard model + LeadCheck", [np.mean([M[n]["detect_correct"][k]["spec95"][metric]["rate"] or 0 for n in STD]) for k in ORDER], "#2e86de")]
+    for i, (lab, vals, col) in enumerate(series):
+        bars = ax.bar(x + (i - 1) * w, 100 * np.array(vals), w, label=lab, color=col)
+        if i == 2:
+            for j, k in enumerate(ORDER):
+                if k in APPROX:
+                    bars[j].set_height(0)
+                    ax.text(x[j] + w, 1, "re-record", rotation=90, ha="center", va="bottom", fontsize=7, color="#555")
+    null = np.mean([M[n]["null"]["spec95"][metric]["rate"] for n in STD])
+    ax.axhline(100 * null, color="#555", lw=0.8, ls="--")
+    ax.text(len(ORDER) - 0.5, 100 * null + 1, "benign perturbation", ha="right", fontsize=7, color="#555")
+    ax.set_ylabel(ylab)
+    ax.spines[["top", "right"]].set_visible(False)
+axes[0].set_title("Electrode interchanges vs ECG-AI: PTB-XL test fold, 95 % clean specificity, mean over models")
+axes[0].legend(frameon=False, fontsize=9, loc="upper right")
+axes[1].set_xticks(x)
+axes[1].set_xticklabels([("rot " + k[9:] if k.startswith("rotation") else k) + ("*" if k in APPROX else "") for k in ORDER],
+                        rotation=35, ha="right", fontsize=9)
+fig.text(0.01, 0.01, "* approximate simulation (right-leg potential not recorded). LeadCheck bars are below 0.2 % where not visible.",
+         fontsize=7, color="#555")
 fig.tight_layout()
 fig.savefig(ROOT / "study/false_mi.png", dpi=150)
 print((ROOT / "study/RESULTS.md").read_text())

@@ -61,6 +61,46 @@ reimplementation of their rules. So the fair claim is that this model is **in th
 published method**, and clearly ahead of a correlation-feature model on identical data. It also names the
 type of mistake.
 
+## Study: do swapped electrodes fool ECG diagnosis AI?
+
+LeadCheck is also the guard in a small study ([`study/`](study/)). It asks how electrode interchanges affect
+deep-learning ECG *diagnosis* models, and whether detecting and undoing the interchange fixes them. I found no
+earlier study that measures this ([`study/PRIOR_ART.md`](study/PRIOR_ART.md)). A 2021 commentary by Bond et al.
+called for exactly this kind of stress test of ECG-AI models.
+
+**Setup**
+- Eight models on the standard PTB-XL five-class task (normal, MI, ST/T change, conduction disturbance, hypertrophy):
+  ResNet and InceptionTime, two seeds each, trained either on clean ECGs or with random interchanges.
+- Clean macro-AUROC 0.921-0.927.
+- The plan was committed before training ([`study/PLAN.md`](study/PLAN.md)). It was amended once, after an
+  independent methodological review and before the reported run; the first run is kept in `study/archive_v1/`.
+
+![study](study/false_mi.png)
+
+**Results on PTB-XL fold 10** (2,158 recordings, 1,877 patients; full tables with counts and intervals in
+[`study/RESULTS.md`](study/RESULTS.md)):
+
+- **Accuracy drop.** An LA/RA (arm) interchange lowers the standard models' macro-AUROC by 0.136-0.147
+  (patient-bootstrap 95 % CIs within 0.125-0.157). RA/LL and one limb rotation push MI detection to chance
+  level: MI AUROC 0.47-0.58.
+- **False and missed MI.** At a fixed operating point (95 % specificity on clean data):
+  - LA/RA makes the standard models call MI on 26-58 % of normal ECGs, and RA/LL on 92-100 %.
+  - LA/LL hides 35-53 % of the MIs they had detected.
+  - A benign perturbation (noise plus a 30 ms shift) causes 0-0.3 % false MI.
+- **LeadCheck in front (detect and correct).**
+  - Newly called MI stays at 0.1 % or below, and lost MIs at 4.5 % or below.
+  - 0.2-2.8 % of diagnoses change.
+  - It changes 0-0.2 % of diagnoses on correctly recorded ECGs.
+  - Right-leg interchanges cannot be undone, so they are routed to re-recording.
+- **Training with interchanges instead.** This keeps false MI at 2.2 % or below. But the augmented models
+  still lose 10-32 % of their detected MIs under limb interchanges, so augmentation alone is not a full fix.
+
+**Caveats**
+- The interchanges are simulated on real recordings, and the detector shares that simulator. For exact
+  interchanges, recovery is therefore bounded by LeadCheck's detection and typing accuracy, by construction.
+- At a 2 % interchange prevalence, about 65 % of LeadCheck's flags would be true interchanges.
+- One dataset. Real interchanged recordings from other hospitals have not been tested.
+
 ## A real-world check
 
 PTB-XL's own reports mention suspected electrode problems for a handful of recordings. I scored every
@@ -88,15 +128,16 @@ swap. None of this is confirmed by a cardiologist.
 ```bash
 pip install -r requirements.txt
 streamlit run app.py          # demo (ONNX model, CPU only)
-python -m pytest -q tests     # 6 tests
+python -m pytest -q tests     # unit tests
 ```
 
-To retrain, install `requirements-train.txt`, download PTB-XL, and run, in order:
-1. `scripts/build_dataset.py`
-2. `scripts/train.py`
-3. `scripts/baseline.py`
-4. `scripts/predict.py`
-5. `scripts/evaluate.py`
+**Checkpoints.** The detector and the eight study models are attached to the GitHub release `v2`. With them,
+`scripts/diag_study.py` reproduces `study/results.json` exactly.
+
+**Rebuilding from scratch.** `W=/some/dir ./run_all.sh` downloads PTB-XL, checks its checksums, then trains
+and evaluates the detector and the study models. It needs Python 3.12, `requirements-train.txt` and a CUDA GPU.
+Training uses seeded augmentation and deterministic kernels, so a retrain matches the released checkpoints
+within normal run-to-run variation, not bit for bit.
 
 ## Data and licence
 

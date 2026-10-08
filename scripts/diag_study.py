@@ -225,7 +225,7 @@ def main():
                                 capture_output=True, text=True).stdout.strip())
     res["provenance"] = {"git_commit": git, "git_dirty": dirty, "python": platform.python_version(), "torch": torch.__version__,
                          "numpy": np.__version__, "scikit_learn": sklearn.__version__, "scipy": scipy.__version__,
-                         "leadcheck_checkpoint_sha256": sha256(lc_ckpt), "threshold_file": str(thr_json),
+                         "leadcheck_checkpoint_sha256": sha256(lc_ckpt), "threshold_file": (str(pathlib.Path(thr_json).resolve().relative_to(ROOT)) if pathlib.Path(thr_json).resolve().is_relative_to(ROOT) else pathlib.Path(thr_json).name),
                          "X100_sha256": sha256(pathlib.Path(data) / "X100.npy"),
                          "meta_sha256": sha256(pathlib.Path(data) / "meta.json"), "bootstrap_replicates": BOOT}
     json.dump(clean(res), open(out_json, "w"), indent=1, allow_nan=False)
