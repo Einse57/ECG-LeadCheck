@@ -1,0 +1,4 @@
+# Optional: PyTorch on Intel GPUs (torch.xpu). Install from the PyTorch XPU wheel index, e.g.
+#   pip install -r requirements-xpu.txt --index-url https://download.pytorch.org/whl/xpu
+# The torch backend falls back to CPU when no XPU device is present.
+torch==2.10.0

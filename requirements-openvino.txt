@@ -1,0 +1,2 @@
+# Optional: OpenVINO backend (CPU / GPU / NPU). Version used for the numbers in docs/ACCELERATION.md.
+openvino==2026.4.1
