@@ -7,7 +7,6 @@ import argparse
 import json
 import pathlib
 import platform
-import resource
 import sys
 import time
 
@@ -28,6 +27,7 @@ def peak_rss_mb():
             return p.memory_info().peak_wset / 2**20
     except ImportError:
         pass
+    import resource  # not available on Windows; psutil covers that case above
     r = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     return r / 1024 if sys.platform != "darwin" else r / 2**20
 
@@ -64,7 +64,8 @@ def main():
         ts.append((time.perf_counter() - t) * 1e3)
     ts = np.array(ts)
     out = {"backend": a.backend, "device": str(getattr(f, "device", a.device)), "batch": a.batch,
-           "precision": a.precision,
+           "precision": a.precision or ("f32" if a.backend == "openvino" and str(a.device).upper() in ("CPU", "NONE")
+                                        else None),
            "load_compile_s": round(load_s, 3), "median_ms": round(float(np.median(ts)), 3),
            "p90_ms": round(float(np.percentile(ts, 90)), 3), "per_ecg_ms": round(float(np.median(ts)) / a.batch, 3),
            "peak_rss_mb": round(peak_rss_mb(), 1), "iters": a.iters, "host": platform.platform()}
