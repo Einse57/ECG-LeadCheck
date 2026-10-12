@@ -38,20 +38,53 @@ median and p90 latency per batch and the process's peak resident memory.
 ## Agreement with the ONNX Runtime reference
 
 PTB-XL folds 9 and 10, every recording under every interchange: 4,381 recordings, 56,953 inputs.
-Reference: ONNX Runtime 1.30.0 CPU. Tested on an Intel Xeon cloud VM (8 vCPU, Linux), OpenVINO 2026.4.1,
-PyTorch 2.10.0 (CPU).
+Reference: ONNX Runtime 1.30.0 on the same machine's CPU. Software: OpenVINO 2026.4.1, PyTorch 2.10.0
+(`+cpu` wheel; `+xpu` wheel for the Arc GPU), Python 3.12.
 
-| backend | max abs logit difference | same predicted class | same alarm decision |
-|---|---|---|---|
-| PyTorch CPU (`leadcheck_main.pt`) | 4.7e-6 | 100 % | 100 % |
-| OpenVINO CPU, f32 (default) | 7.6e-6 | 100 % | 100 % |
-| OpenVINO CPU, bf16 | 6.29 | 99.95 % | 99.92 % |
+| machine | backend / device | max abs logit difference | same predicted class | same alarm decision |
+|---|---|---|---|---|
+| Core Ultra 9 285H, Windows 11 | PyTorch CPU | 4.8e-6 | 100 % | 100 % |
+| | PyTorch XPU, Arc 140T GPU | 5.7e-6 | 100 % | 100 % |
+| | OpenVINO CPU, f32 (default) | 7.6e-6 | 100 % | 100 % |
+| | OpenVINO CPU, bf16 | 0.070 | 99.995 % | 99.97 % |
+| | OpenVINO GPU, Arc 140T (default precision) | 0.018 | 100 % | 99.995 % |
+| | OpenVINO NPU (default precision, batch 1) | 0.016 | 100 % | 99.991 % |
+| Core Ultra 7 265F, Windows 11 | PyTorch CPU | 4.3e-6 | 100 % | 100 % |
+| | OpenVINO CPU, f32 (default) | 7.6e-6 | 100 % | 100 % |
+| | OpenVINO CPU, bf16 | 0.070 | 99.995 % | 99.97 % |
+| | OpenVINO NPU (default precision, batch 1) | 0.016 | 100 % | 99.991 % |
+| Intel Xeon cloud VM (8 vCPU), Linux | PyTorch CPU | 4.7e-6 | 100 % | 100 % |
+| | OpenVINO CPU, f32 (default) | 7.6e-6 | 100 % | 100 % |
+| | OpenVINO CPU, bf16 | 6.29 | 99.95 % | 99.92 % |
 
-With the fold-9 threshold re-derived from each backend's outputs, the fold-10 results from
-`scripts/evaluate.py` are identical for ONNX Runtime, PyTorch CPU and OpenVINO CPU f32, and match
+On the Xeon VM, the fold-10 results from `scripts/evaluate.py` (with the fold-9 threshold re-derived from
+each backend's outputs) are identical for ONNX Runtime, PyTorch CPU and OpenVINO CPU f32, and match
 `results/fold10_metrics.json` at the precision shown in `GATE_RESULT.md`.
 
-GPU, NPU and XPU agreement has not been measured yet.
+## Latency
+
+`scripts/bench.py`, 200 iterations after 10 warm-up runs on the bundled examples. Batch 13 is one
+recording under every interchange. On the Windows machines the runs were started as a scheduled task
+in the interactive desktop session. Peak memory is the process peak resident set (peak working set on
+Windows) and includes the Python runtime and the framework.
+
+| machine | backend / device | batch | median ms | p90 ms | peak memory MB |
+|---|---|---|---|---|---|
+| Core Ultra 9 285H | ONNX Runtime CPU | 13 | 40.5 | 71.7 | 105 |
+| | PyTorch CPU | 13 / 1 | 32.5 / 5.58 | 38.2 / 6.21 | 256 |
+| | PyTorch XPU, Arc 140T | 13 / 1 | 8.42 / 2.15 | 8.72 / 2.41 | 1,144 |
+| | OpenVINO CPU f32 | 13 / 1 | 15.2 / 1.61 | 16.1 / 2.25 | 134 |
+| | OpenVINO GPU, Arc 140T | 13 / 1 | 1.01 / 0.335 | 1.10 / 0.342 | 426 |
+| | OpenVINO NPU | 13 / 1 | 7.01 / 1.11 | 7.15 / 1.17 | 157 |
+| Core Ultra 7 265F | ONNX Runtime CPU | 13 | 25.4 | 26.6 | 106 |
+| | PyTorch CPU | 13 / 1 | 14.8 / 3.06 | 15.3 / 3.47 | 257 |
+| | OpenVINO CPU f32 | 13 / 1 | 12.7 / 1.13 | 13.5 / 1.33 | 131 |
+| | OpenVINO NPU | 13 / 1 | 6.93 / 1.09 | 7.09 / 1.13 | 165 |
+| Intel Xeon cloud VM (8 vCPU, shared) | ONNX Runtime CPU | 13 | 47.3 | 64.8 | 110 |
+| | PyTorch CPU | 13 | 26.7 | 37.4 | 286 |
+| | OpenVINO CPU f32 | 13 | 13.5 | 20.1 | 153 |
+
+On the 265F machine, OpenVINO's `GPU` device is a discrete non-Intel card; it was not tested.
 
 ## Chaining with OpenECG
 
