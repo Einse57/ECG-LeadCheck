@@ -150,6 +150,9 @@ streamlit run app.py          # demo (ONNX model, CPU only)
 python -m pytest -q tests     # unit tests
 ```
 
+**Other backends.** PyTorch on Intel GPUs (`torch.xpu`, falling back to CPU) and OpenVINO on
+CPU/GPU/NPU are optional; see [`docs/ACCELERATION.md`](docs/ACCELERATION.md).
+
 **Checkpoints.** The detector and the eight study models are attached to the GitHub release `v2`. With them,
 `scripts/diag_study.py` reproduces `study/results.json` exactly.
 
