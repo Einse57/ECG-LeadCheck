@@ -86,6 +86,23 @@ Windows) and includes the Python runtime and the framework.
 
 On the 265F machine, OpenVINO's `GPU` device is a discrete non-Intel card; it was not tested.
 
+### Core Ultra 9 285H, single session (2026-10-14)
+
+All paths in one scheduled-task session, batch 13 (one recording under every interchange), median of
+200 iterations after 10 warm-up runs. ONNX Runtime 1.30.0 (`CPUExecutionProvider`), OpenVINO 2026.4.1.
+CPU load before the session: about 3 %.
+
+| backend / device | settings | median ms | p90 ms |
+|---|---|---|---|
+| ONNX Runtime CPU | default threads | 34.6 | 40.4 |
+| ONNX Runtime CPU | 2 threads, as in `app.py` | 62.8 | 63.7 |
+| OpenVINO GPU, Arc 140T | device default precision | 1.04 | 1.16 |
+| OpenVINO NPU | device default precision | 6.98 | 7.12 |
+| OpenVINO CPU | f32 | 14.3 | 14.7 |
+
+A quick agreement check in the same session (first 200 fold-10 recordings, 2,600 inputs) gave 100 %
+class and alarm agreement with ONNX Runtime on GPU, NPU and CPU f32.
+
 ## Chaining with OpenECG
 
 `examples/leadcheck_then_openecg.py` reads a 12-lead WFDB record and:
